@@ -12,26 +12,43 @@ export class App extends React.Component {
       {id: 'id-2', name: 'Hermione Kline', number: '443-89-12'},
       {id: 'id-3', name: 'Eden Clements', number: '645-17-79'},
       {id: 'id-4', name: 'Annie Copeland', number: '227-91-26'},
-      {id: 'id-5', name: 'Edie Jackson', number: '235-11-46'},
     ],
     filter: '',
     name: '',
     number: ''
   };
 
+  // save in localStorage 
+  componentDidUpdate() {
+    const { contacts } = this.state;
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  };
+
+  // load from LocalStorage
+  componentDidMount() {
+    const storedConatacts = localStorage.getItem('contacts');
+    if (storedConatacts) {
+      this.setState({contacts: JSON.parse(storedConatacts)})
+    }
+  };
+
  // add contact in list
  addContact = ({name, number}) => {
   const { contacts } = this.state;
 // Check if there is a contact with the same name  
-  const isDuplicate = contacts.some(contact => contact.name === name);
+  const isDuplicate = contacts.some(contact => contact.name.toLowerCase() === name.toLowerCase());
+  const isDuplicateNumber = contacts.some(contact => contact.number === number);
   if (isDuplicate) {
-    alert( `${name} is already exists!`);
+    alert( `${name} already exists!`);
+    return;
+  }
+  else if (isDuplicateNumber) {
+    alert( `${number} already exists in the contacts!`);
     return;
   }
   this.setState(prevState => ({
     contacts: [{ name, number, id: nanoid() }, ...prevState.contacts],
   }));
-  
  };
 
  // delete contact 
